@@ -56,6 +56,21 @@ app.get("/api/v1/spotify", async (req, res) => {
   }
 });
 
+app.get("/api/v1/spotify/search", async (req, res) => {
+  try {
+    const { data } = await spotifyApi.searchTracks("artist:Love");
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+});
+
 app.start = function () {
   return app.listen(function () {
     app.emit("started");
