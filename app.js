@@ -56,13 +56,107 @@ app.get("/api/v1/spotify", async (req, res) => {
   }
 });
 
+// app.get("/api/v1/spotify/search", async (req, res) => {
+//   try {
+//     const { data } = await spotifyApi.searchTracks("artist:BTS");
+//     res.status(200).json({
+//       status: "success",
+//       data,
+//     });
+//     console.log(data);
+//   } catch (err) {
+//     res.status(400).json({
+//       status: "error",
+//       message: err.message,
+//     });
+//   }
+// });
+
 app.get("/api/v1/spotify/search", async (req, res) => {
   try {
-    const { data } = await spotifyApi.searchTracks("artist:Love");
+    const response = await spotifyApi.searchArtists("artist:BTS");
+    console.log(response);
+    const { data } = response;
     res.status(200).json({
       status: "success",
       data,
     });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+});
+
+// getting user data
+app.get("/api/v1/spotify/user", async (req, res) => {
+  try {
+    const data = await spotifyApi.getMe({
+      headers: {
+        Authorization: `Bearer ${spotifyApi.getAccessToken()}`,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+});
+
+// searching for tracks by artist name
+app.get("/api/v1/spotify/search/tracks", async (req, res) => {
+  try {
+    const { data } = await spotifyApi.searchTracks(
+      `artist:${req.query.artist}`
+      // ["track"]
+    );
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+});
+
+//  searching for albums by artist name
+
+app.get("/api/v1/spotify/albums", async (req, res) => {
+  try {
+    const { data } = await spotifyApi.searchAlbums(
+      `artist:${req.query.artist}`
+    );
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+});
+
+// getting an album by its ID
+//http://localhost:3000/api/v1/spotify/album/2qehskW9lYGWfYb0xPZkrS
+app.get("/api/v1/spotify/album/:id", async (req, res) => {
+  try {
+    const data = await spotifyApi.getAlbum(req.params.id);
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+    console.log(data);
   } catch (err) {
     res.status(400).json({
       status: "error",
