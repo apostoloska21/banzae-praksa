@@ -37,7 +37,6 @@ request.post(authOptions, function (error, response, body) {
   }
 });
 
-// Define the endpoint for the Spotify Web API request
 app.get("/api/v1/spotify", async (req, res) => {
   try {
     const data = await spotifyApi.getMe({
@@ -57,7 +56,6 @@ app.get("/api/v1/spotify", async (req, res) => {
   }
 });
 
-// Start the server
 app.start = function () {
   return app.listen(function () {
     app.emit("started");
@@ -70,8 +68,6 @@ app.start = function () {
   });
 };
 
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, function (err) {
   if (err) throw err;
   // start the server if `$ node server.js`
