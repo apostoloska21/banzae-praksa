@@ -72,6 +72,7 @@ app.get("/api/v1/spotify", async (req, res) => {
 //   }
 // });
 
+//search
 app.get("/api/v1/spotify/search", async (req, res) => {
   try {
     const response = await spotifyApi.searchArtists("artist:BTS");
@@ -114,7 +115,6 @@ app.get("/api/v1/spotify/search/tracks", async (req, res) => {
   try {
     const { data } = await spotifyApi.searchTracks(
       `artist:${req.query.artist}`
-      // ["track"]
     );
     res.status(200).json({
       status: "success",
