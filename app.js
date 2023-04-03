@@ -55,32 +55,27 @@ app.get("/api/v1/spotify", async (req, res) => {
     });
   }
 });
-
-// app.get("/api/v1/spotify/search", async (req, res) => {
-//   try {
-//     const { data } = await spotifyApi.searchTracks("artist:BTS");
-//     res.status(200).json({
-//       status: "success",
-//       data,
-//     });
-//     console.log(data);
-//   } catch (err) {
-//     res.status(400).json({
-//       status: "error",
-//       message: err.message,
-//     });
-//   }
-// });
-
 //search
 app.get("/api/v1/spotify/search", async (req, res) => {
+  // const { artist } = req.query;
+  console.log( req.query);
   try {
-    const response = await spotifyApi.searchArtists("artist:BTS");
-    console.log(response);
+    const response = await spotifyApi.searchArtists(
+      `artist:${req.query.artist}`
+    );
     const { data } = response;
+
+    if (data.artists.total === 0) {
+      res.status(404).json({
+        status: "error",
+        message: "No artists found.",
+      });
+      return;
+    }
+    const { items } = data.artists;
     res.status(200).json({
       status: "success",
-      data,
+      data: items,
     });
   } catch (err) {
     res.status(400).json({
@@ -127,17 +122,22 @@ app.get("/api/v1/spotify/search/tracks", async (req, res) => {
     });
   }
 });
-
-//  searching for albums by artist name
-
+//searching for albums by artist name
 app.get("/api/v1/spotify/albums", async (req, res) => {
   try {
-    const { data } = await spotifyApi.searchAlbums(
-      `artist:${req.query.artist}`
-    );
+    const { artist } = req.query;
+    const response = await spotifyApi.searchAlbums(`artist:${artist}`);
+    const albums = response.body.albums.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      image: item.images[0].url,
+      releaseDate: item.release_date,
+      tracks: item.total_tracks,
+      artist: item.artists[0].name,
+    }));
     res.status(200).json({
       status: "success",
-      data,
+      data: albums,
     });
   } catch (err) {
     res.status(400).json({
@@ -146,7 +146,6 @@ app.get("/api/v1/spotify/albums", async (req, res) => {
     });
   }
 });
-
 // getting an album by its ID
 //http://localhost:3000/api/v1/spotify/album/2qehskW9lYGWfYb0xPZkrS
 app.get("/api/v1/spotify/album/:id", async (req, res) => {
